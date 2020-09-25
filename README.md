@@ -1,2 +1,2 @@
-# fov_finder
-find fov in shader
+# FOV Finder
+still in dev. This is is a prelim version that works but not the best....
