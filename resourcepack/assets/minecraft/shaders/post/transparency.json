@@ -1,0 +1,276 @@
+{
+    "targets": [
+        "translucent",
+        "itemEntity",
+        "particles",
+        "clouds",
+        "weather",
+        "swap1",
+        "swap2",
+        "swap3",
+        "temporal"
+    ],
+    "passes": [
+        {
+            "name": "filter",
+            "intarget": "itemEntity",
+            "outtarget": "swap1",
+            "auxtargets": [
+                {
+                    "name": "DiffuseDepthSampler",
+                    "id": "itemEntity:depth"
+                }
+            ],
+            "uniforms": [
+                {
+                    "name":"Range",
+                    "values": [ 3.5 ]
+                }
+            ]
+        },
+        {
+            "name": "centers_med",
+            "intarget": "swap1",
+            "outtarget": "swap2",
+            "auxtargets": [
+                {
+                    "name": "DiffuseDepthSampler",
+                    "id": "itemEntity:depth"
+                }
+            ],
+            "uniforms": [
+                {
+                    "name":"ScreenTolerance",
+                    "values": [ 0.005 ]
+                },
+                {
+                    "name":"DepthTolerance",
+                    "values": [ 0.02 ]
+                }
+            ]
+        },
+        {
+            "name": "centers_fine",
+            "intarget": "swap2",
+            "outtarget": "swap3"
+        },
+        {
+            "name": "aggregate_1",
+            "intarget": "swap3",
+            "outtarget": "swap1",
+            "uniforms": [
+                {
+                    "name":"Step",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Test",
+                    "values": [ 0.0 ]
+                }
+            ]
+        },
+        {
+            "name": "aggregate_2",
+            "intarget": "swap1",
+            "outtarget": "swap2",
+            "uniforms": [
+                {
+                    "name":"Step",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Test",
+                    "values": [ 0.0 ]
+                }
+            ]
+        },
+        {
+            "name": "aggregate_3",
+            "intarget": "swap2",
+            "outtarget": "swap1",
+            "uniforms": [
+                {
+                    "name":"Step",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Test",
+                    "values": [ 0.0 ]
+                }
+            ]
+        },
+        {
+            "name": "aggregate_4",
+            "intarget": "swap1",
+            "outtarget": "swap2",
+            "uniforms": [
+                {
+                    "name":"Step",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Test",
+                    "values": [ 0.0 ]
+                }
+            ]
+        },
+        {
+            "name": "aggregate_5",
+            "intarget": "swap2",
+            "outtarget": "swap1",
+            "uniforms": [
+                {
+                    "name":"Step",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Test",
+                    "values": [ 0.0 ]
+                }
+            ]
+        },
+        {
+            "name": "aggregate_6",
+            "intarget": "swap1",
+            "outtarget": "swap2",
+            "auxtargets": [
+                {
+                    "name": "ColoredCentersSampler",
+                    "id": "swap3"
+                }
+            ],
+            "uniforms": [
+                {
+                    "name":"Step",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Test",
+                    "values": [ 0.0 ]
+                }
+            ]
+        },
+        {
+            "name": "filter_v",
+            "intarget": "itemEntity",
+            "outtarget": "swap1",
+            "auxtargets": [
+                {
+                    "name": "CentersSampler",
+                    "id": "swap2"
+                }
+            ]
+        },
+        {
+            "name": "fov_calc",
+            "intarget": "temporal",
+            "outtarget": "swap3",
+            "auxtargets": [
+                {
+                    "name": "CentersSampler",
+                    "id": "swap2"
+                },
+                {
+                    "name": "DiffuseDepthSampler",
+                    "id": "itemEntity:depth"
+                }
+                
+            ],
+            "uniforms": [
+                {
+                    "name":"SideLength",
+                    "values": [ 0.43625 ]
+                }
+            ]
+        },
+        {
+            "name": "copy",
+            "intarget": "swap3",
+            "outtarget": "temporal"
+        },
+        {
+            "name": "transparency",
+            "intarget": "minecraft:main",
+            "outtarget": "swap3",
+            "auxtargets": [
+                {
+                    "name": "DiffuseDepthSampler",
+                    "id": "minecraft:main:depth"
+                },
+                {
+                    "name": "TranslucentSampler",
+                    "id": "translucent"
+                },
+                {
+                    "name": "TranslucentDepthSampler",
+                    "id": "translucent:depth"
+                },
+                {
+                    "name": "ItemEntitySampler",
+                    "id": "swap1"
+                },
+                {
+                    "name": "ItemEntityDepthSampler",
+                    "id": "itemEntity:depth"
+                },
+                {
+                    "name": "ParticlesSampler",
+                    "id": "particles"
+                },
+                {
+                    "name": "ParticlesDepthSampler",
+                    "id": "particles:depth"
+                },
+                {
+                    "name": "CloudsSampler",
+                    "id": "clouds"
+                },
+                {
+                    "name": "CloudsDepthSampler",
+                    "id": "clouds:depth"
+                },
+                {
+                    "name": "WeatherSampler",
+                    "id": "weather"
+                },
+                {
+                    "name": "WeatherDepthSampler",
+                    "id": "weather:depth"
+                }
+            ]
+        },
+        {
+            "name": "textoverlay",
+            "intarget": "swap3",
+            "outtarget": "swap2",
+            "auxtargets": [
+                {
+                    "name": "FOVSampler",
+                    "id": "temporal"
+                },
+                { 
+                    "name" : "NumberTex",
+                    "id" : "numbers" , 
+                    "width" : 1000 , 
+                    "height" : 104 , 
+                    "bilinear" : true 
+                }
+            ],
+            "uniforms": [
+                {
+                    "name":"FontDim",
+                    "values": [ 100.0, 104.0 ]
+                },
+                {
+                    "name":"FontHeight",
+                    "values": [ 0.017 ]
+                }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap2",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}
