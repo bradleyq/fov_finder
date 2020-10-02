@@ -1,8 +1,8 @@
-# FOV Shader
+# FOV Finder
 <img src="/images/2.png" alt="Image2"/>
 
 ## Overview
-Finding realtime screen FOV and draw distance using MC's exposed transparency shaders. Requires "Fabulous" graphics setting. Supports FOV 14.0 - 150.0 and draw distances 4.0 - 32.0. The shader is more reliable at mid range FOV and draw distances. Extremes can produce inconsistent values. FOV is calculated using world tbn information and inferring orientations of faces of the diffuse target. Draw distance is calculated on a reactionary basis using the approximate standard deviation of calculated FOV on the screen.
+Vanilla shader that finds screen FOV and draw distance in realtime using MC's exposed transparency shaders. Requires "Fabulous" graphics setting. Supports FOV 14.0 - 150.0 and draw distances 4.0 - 32.0. The shader is more reliable at mid range FOV and draw distances. Extremes can produce inconsistent values. FOV is calculated using world tbn information and inferring orientations of faces of the diffuse target. Draw distance is calculated on a reactionary basis using the approximate standard deviation of calculated FOV on the screen.
 
 ### What it does:
 - realtime screen FOV calculation pipeline using **no markers or other datapack aids**
