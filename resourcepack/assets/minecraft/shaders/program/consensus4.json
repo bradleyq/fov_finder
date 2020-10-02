@@ -4,15 +4,16 @@
         "srcrgb": "one",
         "dstrgb": "zero"
     },
-    "vertex": "fov_calc",
-    "fragment": "fov_calc",
+    "vertex": "consensus",
+    "fragment": "consensus4",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "DiffuseSampler" },
-        { "name": "DiffuseDepthSampler" }
+        { "name": "FOVSampler" }
     ],
     "uniforms": [
+        { "name": "InSize",     "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
         { "name": "OutSize",    "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
-        { "name": "Range",      "type": "float",     "count": 1,  "values": [ 1.0 ] }
+        { "name": "Smoothing",  "type": "float",     "count": 1,  "values": [ 0.5 ] }
     ]
 }

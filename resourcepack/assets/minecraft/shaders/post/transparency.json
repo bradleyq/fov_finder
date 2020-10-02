@@ -7,191 +7,223 @@
         "weather",
         "swap1",
         "swap2",
-        "swap3",
-        "temporal"
+        { "name": "reduced1", "width": 256, "height": 256, "bilinear": false },
+        { "name": "reduced2", "width": 256, "height": 256, "bilinear": false },
+        { "name": "temporal1", "width": 10, "height": 1, "bilinear": false },
+        { "name": "temporal2", "width": 10, "height": 1, "bilinear": false }
     ],
     "passes": [
         {
-            "name": "filter",
-            "intarget": "itemEntity",
+            "name": "fov_calc",
+            "intarget": "temporal1",
             "outtarget": "swap1",
             "auxtargets": [
                 {
                     "name": "DiffuseDepthSampler",
-                    "id": "itemEntity:depth"
+                    "id": "minecraft:main:depth"
                 }
             ],
             "uniforms": [
                 {
                     "name":"Range",
-                    "values": [ 3.5 ]
+                    "values": [ 64.0 ]
                 }
             ]
         },
         {
-            "name": "centers_med",
+            "name": "consensus0",
             "intarget": "swap1",
             "outtarget": "swap2",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 100.0 ]
+                },
+                {
+                    "name":"Reject",
+                    "values": [ 3.0 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus1",
+            "intarget": "swap2",
+            "outtarget": "swap1",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 300.0 ]
+                },
+                {
+                    "name":"SearchRadius",
+                    "values": [ 0.3 ]
+                },
+                {
+                    "name":"Reject",
+                    "values": [ 3.0 ]
+                },
+                {
+                    "name":"Downscale",
+                    "values": [ 2.0 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus2",
+            "intarget": "swap1",
+            "outtarget": "swap2",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 300.0 ]
+                },
+                {
+                    "name":"ChunkSize",
+                    "values": [ 8.0 ]
+                },
+                {
+                    "name":"Amount",
+                    "values": [ 0.5, 0.5 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus3",
+            "intarget": "swap2",
+            "outtarget": "reduced1",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 300.0 ]
+                },
+                {
+                    "name":"ChunkSize",
+                    "values": [ 16.0 ]
+                },
+                {
+                    "name":"Amount",
+                    "values": [ 0.0625, 0.5 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus2",
+            "intarget": "reduced1",
+            "outtarget": "reduced2",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 100.0 ]
+                },
+                {
+                    "name":"ChunkSize",
+                    "values": [ 16.0 ]
+                },
+                {
+                    "name":"Amount",
+                    "values": [ 1.0, 1.0 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus3",
+            "intarget": "reduced2",
+            "outtarget": "reduced1",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 100.0 ]
+                },
+                {
+                    "name":"ChunkSize",
+                    "values": [ 16.0 ]
+                },
+                {
+                    "name":"Amount",
+                    "values": [ 0.0625, 1.0 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus2",
+            "intarget": "reduced1",
+            "outtarget": "reduced2",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 100.0 ]
+                },
+                {
+                    "name":"ChunkSize",
+                    "values": [ 16.0 ]
+                },
+                {
+                    "name":"Amount",
+                    "values": [ 0.0625, 0.0625 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus3",
+            "intarget": "reduced2",
+            "outtarget": "reduced1",
+            "uniforms": [
+                {
+                    "name":"Tolerance",
+                    "values": [ 100.0 ]
+                },
+                {
+                    "name":"ChunkSize",
+                    "values": [ 16.0 ]
+                },
+                {
+                    "name":"Amount",
+                    "values": [ 0.0625, 0.0625 ]
+                }
+            ]
+        },
+        {
+            "name": "consensus4",
+            "intarget": "temporal1",
+            "outtarget": "temporal2",
             "auxtargets": [
                 {
-                    "name": "DiffuseDepthSampler",
-                    "id": "itemEntity:depth"
+                    "name": "FOVSampler",
+                    "id": "reduced1"
                 }
             ],
             "uniforms": [
                 {
-                    "name":"ScreenTolerance",
-                    "values": [ 0.005 ]
-                },
-                {
-                    "name":"DepthTolerance",
-                    "values": [ 0.02 ]
+                    "name":"Smoothing",
+                    "values": [ 0.97 ]
                 }
             ]
         },
         {
-            "name": "centers_fine",
-            "intarget": "swap2",
-            "outtarget": "swap3"
-        },
-        {
-            "name": "aggregate_1",
-            "intarget": "swap3",
-            "outtarget": "swap1",
-            "uniforms": [
-                {
-                    "name":"Step",
-                    "values": [ 8.0 ]
-                },
-                {
-                    "name":"Test",
-                    "values": [ 0.0 ]
-                }
-            ]
-        },
-        {
-            "name": "aggregate_2",
-            "intarget": "swap1",
-            "outtarget": "swap2",
-            "uniforms": [
-                {
-                    "name":"Step",
-                    "values": [ 8.0 ]
-                },
-                {
-                    "name":"Test",
-                    "values": [ 0.0 ]
-                }
-            ]
-        },
-        {
-            "name": "aggregate_3",
-            "intarget": "swap2",
-            "outtarget": "swap1",
-            "uniforms": [
-                {
-                    "name":"Step",
-                    "values": [ 8.0 ]
-                },
-                {
-                    "name":"Test",
-                    "values": [ 0.0 ]
-                }
-            ]
-        },
-        {
-            "name": "aggregate_4",
-            "intarget": "swap1",
-            "outtarget": "swap2",
-            "uniforms": [
-                {
-                    "name":"Step",
-                    "values": [ 8.0 ]
-                },
-                {
-                    "name":"Test",
-                    "values": [ 0.0 ]
-                }
-            ]
-        },
-        {
-            "name": "aggregate_5",
-            "intarget": "swap2",
-            "outtarget": "swap1",
-            "uniforms": [
-                {
-                    "name":"Step",
-                    "values": [ 8.0 ]
-                },
-                {
-                    "name":"Test",
-                    "values": [ 0.0 ]
-                }
-            ]
-        },
-        {
-            "name": "aggregate_6",
-            "intarget": "swap1",
-            "outtarget": "swap2",
+            "name": "dist_calc",
+            "intarget": "temporal2",
+            "outtarget": "temporal1",
             "auxtargets": [
                 {
-                    "name": "ColoredCentersSampler",
-                    "id": "swap3"
-                }
-            ],
-            "uniforms": [
-                {
-                    "name":"Step",
-                    "values": [ 8.0 ]
-                },
-                {
-                    "name":"Test",
-                    "values": [ 0.0 ]
-                }
-            ]
-        },
-        {
-            "name": "filter_v",
-            "intarget": "itemEntity",
-            "outtarget": "swap1",
-            "auxtargets": [
-                {
-                    "name": "CentersSampler",
+                    "name": "FOVSampler",
                     "id": "swap2"
                 }
-            ]
-        },
-        {
-            "name": "fov_calc",
-            "intarget": "temporal",
-            "outtarget": "swap3",
-            "auxtargets": [
-                {
-                    "name": "CentersSampler",
-                    "id": "swap2"
-                },
-                {
-                    "name": "DiffuseDepthSampler",
-                    "id": "itemEntity:depth"
-                }
-                
             ],
             "uniforms": [
                 {
-                    "name":"SideLength",
-                    "values": [ 0.43625 ]
+                    "name":"Amount",
+                    "values": [ 0.0625, 0.5 ]
+                },
+                {
+                    "name":"Smoothing",
+                    "values": [ 0.95 ]
                 }
             ]
-        },
-        {
-            "name": "copy",
-            "intarget": "swap3",
-            "outtarget": "temporal"
         },
         {
             "name": "transparency",
             "intarget": "minecraft:main",
-            "outtarget": "swap3",
+            "outtarget": "swap1",
             "auxtargets": [
                 {
                     "name": "DiffuseDepthSampler",
@@ -207,7 +239,7 @@
                 },
                 {
                     "name": "ItemEntitySampler",
-                    "id": "swap1"
+                    "id": "itemEntity"
                 },
                 {
                     "name": "ItemEntityDepthSampler",
@@ -241,12 +273,12 @@
         },
         {
             "name": "textoverlay",
-            "intarget": "swap3",
+            "intarget": "swap1",
             "outtarget": "swap2",
             "auxtargets": [
                 {
                     "name": "FOVSampler",
-                    "id": "temporal"
+                    "id": "temporal1"
                 },
                 { 
                     "name" : "NumberTex",
