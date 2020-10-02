@@ -2,7 +2,7 @@
 <img src="/images/2.png" alt="Image2"/>
 
 ## Overview
-Vanilla shader that finds screen FOV and draw distance in realtime using MC's exposed transparency shaders. Requires "Fabulous" graphics setting. Supports FOV 14.0 - 150.0 and draw distances 4.0 - 32.0. The shader is more reliable at mid range FOV and draw distances. Extremes can produce inconsistent values. FOV is calculated using world tbn information and inferring orientations of faces of the diffuse target. Draw distance is calculated on a reactionary basis using the approximate standard deviation of calculated FOV on the screen.
+Vanilla shader that finds screen FOV and draw distance in realtime using MC's exposed transparency shaders. Requires "Fabulous" graphics setting. View bobbing off for most consistent effect. Supports FOV 14.0 - 150.0 and draw distances 4.0 - 32.0. The shader is more reliable at mid range FOV and draw distances. Extremes can produce inconsistent values. FOV is calculated using world tbn information and inferring orientations of faces of the diffuse target. Draw distance is calculated on a reactionary basis using the approximate standard deviation of calculated FOV on the screen.
 
 ### What it does:
 - realtime screen FOV calculation pipeline using **no markers or other datapack aids**
@@ -17,6 +17,7 @@ Vanilla shader that finds screen FOV and draw distance in realtime using MC's ex
 - calculate FOV in void
 - calculate FOV when orthogonal to two axes (generally one is okay)
 - calculate FOV with excessive angled faces (screen full of tall grass, screen full of mobs, etc.)
+- correct for view bobbing offset (WIP)
 
 ### What is achievable:
 <table>
