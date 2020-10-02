@@ -6,7 +6,7 @@ Finding realtime screen FOV and draw distance using MC's exposed transparency sh
 
 ### What it does:
 - realtime screen FOV calculation pipeline using **no markers or other datapack aids**
-- very low performance impact
+- low performance impact
 - no intrusion on lower graphics settings
 - requires visible blocky terrain in `minecraft:main` target
 - good for coarse FOV accurate to 0.1 degrees most of the time (use 0.5 degrees to be extra safe)
