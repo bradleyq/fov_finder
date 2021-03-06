@@ -10,7 +10,6 @@ varying vec2 texCoord;
 #define STEP 128.0 
 #define MAXDIST 32.0
 #define MINDIST 4.0
-#define DEFAULTDIST 12.0
 #define STDMIN 1.2
 #define STDTOL 0.3
 #define TAPS 128

@@ -14,16 +14,16 @@ varying float aspectRatio;
 
 #define BIGNEG -100000.0
 #define NEAR 0.1
-// #define FAR 2048.0 //1536.0
 #define STEP 128.0 
 #define FUDGE 0.001
-#define MAXSLOPE 60.0 //12.0
-#define MINSLOPE 5.0 //12.0
+#define MAXSLOPE 30.0
+#define MINSLOPE 0.03
 #define MAXDELTA 1.0
 #define FIXEDPOINT 100.0
-#define MAXFOV 150.0 * FIXEDPOINT // 166.0
-#define MINFOV 14.0 * FIXEDPOINT // 14.0
-#define DEGCONVERT 180.0 / 3.14159268535 * FIXEDPOINT
+#define MAXFOV 150.0 * FIXEDPOINT
+#define MINFOV 14.0 * FIXEDPOINT
+#define DEGCONVERT 360.0 / 3.14159268535 * FIXEDPOINT
+#define SAMPLESTEP 5.0
 
 int intmod(int i, int base) {
     return i - (i / base * base);
@@ -76,19 +76,18 @@ void main() {
     float projBitangentLen = length(projBitangent);
     projTangent = normalize(projTangent);
     projBitangent = normalize(projBitangent);
-    float step = oneTexel.y;
+    float step = oneTexel.y * SAMPLESTEP;
 
     float distChunks = float(decodeInt(texture2D(DiffuseSampler, vec2(0.25, 0.5)).rgb));
-    // distChunks = 12.0;
 
     float depthM = LinearizeDepth(texture2D(DiffuseDepthSampler, texCoord.xy).r, distChunks);
     float depth1 = LinearizeDepth(texture2D(DiffuseDepthSampler, texCoord.xy - vec2(0.0, step)).r, distChunks);
     float depth2 = LinearizeDepth(texture2D(DiffuseDepthSampler, texCoord.xy + vec2(0.0, step)).r, distChunks);
-    float depth3 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 - projBitangent, distChunks);
-    float depth4 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 + projBitangent, distChunks);
-    float depth5 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 - projTangent, distChunks);
-    float depth6 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 + projTangent, distChunks);
-    float depthV1 = LinearizeDepth(texture2D(DiffuseDepthSampler, texCoord.xy + vec2(step, 0)).r, distChunks);
+    float depth3 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 - projBitangent * SAMPLESTEP, distChunks);
+    float depth4 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 + projBitangent * SAMPLESTEP, distChunks);
+    float depth5 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 - projTangent * SAMPLESTEP, distChunks);
+    float depth6 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 + projTangent * SAMPLESTEP, distChunks);
+    float depthV1 = LinearizeDepth(texture2D(DiffuseDepthSampler, texCoord.xy + vec2(oneTexel.y, 0)).r, distChunks);
     float depthV2 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 + vec2(projBitangent.y, -projBitangent.x), distChunks);
     float depthV3 = depthLerp(DiffuseDepthSampler, texCoord.xy * OutSize - 0.5 + vec2(projTangent.y, -projTangent.x), distChunks);
 
@@ -109,46 +108,44 @@ void main() {
         float fov3 = BIGNEG;
 
         if (abs(depth1 - depth2) > FUDGE && abs(depth1 - depth2) < MAXDELTA && abs(depthM - depthV1) < FUDGE) {
-            x1 = pos.y - step;
-            x2 = pos.y + step;
-            d1 = depth1;
-            d2 = depth2;
             m = normal.y / normal.z;
             if (abs(m) < MAXSLOPE && abs(m) > MINSLOPE) {
+                x1 = pos.y - step;
+                x2 = pos.y + step;
+                d1 = depth1;
+                d2 = depth2;
                 fov1 = m * (d1 * x1 - d2 * x2) / (d1 - d2);
-                fov1 = abs(2.0 * atan(0.5, fov1)) * DEGCONVERT;
+                fov1 = abs(atan(0.5, fov2)) * DEGCONVERT;
             }
         }
 
         if (abs(depth3 - depth4) > FUDGE && abs(depth3 - depth4) < MAXDELTA && abs(depthM - depthV2) < FUDGE) {
-            float distToAxis = dot(pos, projBitangent);
-            x1 = distToAxis - step;
-            x2 = distToAxis + step;
-            d1 = depth3;
-            d2 = depth4;
             m = -projBitangentLen / bDotS;
-
             if (abs(m) < MAXSLOPE && abs(m) > MINSLOPE) {
+                float distToAxis = dot(pos, projBitangent);
+                x1 = distToAxis - step;
+                x2 = distToAxis + step;
+                d1 = depth3;
+                d2 = depth4;
                 fov2 = m * (d1 * x1 - d2 * x2) / (d1 - d2);
-                fov2 = abs(2.0 * atan(0.5, fov2)) * DEGCONVERT;
+                fov2 = abs(atan(0.5, fov2)) * DEGCONVERT;
             }
         }
 
         if (abs(depth5 - depth6) > FUDGE && abs(depth5 - depth6) < MAXDELTA && abs(depthM - depthV3) < FUDGE) {
-            float distToAxis = dot(pos, projTangent);
-            x1 = distToAxis - step;
-            x2 = distToAxis + step;
-            d1 = depth5;
-            d2 = depth6;
             m = -projTangentLen / tDotS;
-
             if (abs(m) < MAXSLOPE && abs(m) > MINSLOPE) {
+                float distToAxis = dot(pos, projTangent);
+                x1 = distToAxis - step;
+                x2 = distToAxis + step;
+                d1 = depth5;
+                d2 = depth6;
                 fov3 = m * (d1 * x1 - d2 * x2) / (d1 - d2);
-                fov3 = abs(2.0 * atan(0.5, fov3)) * DEGCONVERT;
+                fov3 = abs(atan(0.5, fov3)) * DEGCONVERT;
             }
         }
 
-        float oldFov = float(decodeInt(texture2D(DiffuseSampler, vec2(0.05, 0.5)).rgb));
+        float oldFov = clamp(float(decodeInt(texture2D(DiffuseSampler, vec2(0.05, 0.5)).rgb)), MINFOV, MAXFOV);
 
         float fov = fov1;
         float tbn = 3.0;
@@ -165,6 +162,6 @@ void main() {
             outColor = vec4(encodeInt(int(floor(fov + 0.5))), (252.0 + tbn) / 255.0);
         }
     }
-
+    
     gl_FragColor = outColor;
 }
