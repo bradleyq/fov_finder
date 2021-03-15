@@ -115,7 +115,7 @@ void main() {
                 d1 = depth1;
                 d2 = depth2;
                 fov1 = m * (d1 * x1 - d2 * x2) / (d1 - d2);
-                fov1 = abs(atan(0.5, fov2)) * DEGCONVERT;
+                fov1 = abs(atan(0.5, fov1)) * DEGCONVERT;
             }
         }
 
